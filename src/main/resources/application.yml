@@ -1,0 +1,46 @@
+server:
+  port: 8080 # Port the microservice will run on inside the container
+
+spring:
+  application:
+    name: base-banking-showcase-app
+
+  # Database Configuration
+  datasource:
+    # Use environment variables provided by Docker Compose (BEST PRACTICE)
+    url: ${SPRING_DATASOURCE_URL} # e.g., jdbc:postgresql://db:5432/mydatabase
+    username: ${SPRING_DATASOURCE_USERNAME} # e.g., user
+    password: ${SPRING_DATASOURCE_PASSWORD} # e.g., password
+    driver-class-name: org.postgresql.Driver # Specify the driver
+
+  # JPA/Hibernate Configuration
+  jpa:
+    hibernate:
+      # Defines how the schema is managed. Options:
+      # 'none': No action taken (best for production with external migration tools like Flyway/Liquibase)
+      # 'validate': Validate the schema against entities, doesn't make changes.
+      # 'update': Updates the schema (use with caution, potential data loss).
+      # 'create': Creates the schema, destroying previous data.
+      # 'create-drop': Creates schema, drops it when the session factory closes. Good for tests.
+      ddl-auto: validate # Use 'validate' or 'none' for production/staging
+    properties:
+      hibernate:
+        # The SQL dialect for PostgreSQL. Often auto-detected but good to specify.
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        # Optional: Show SQL statements in logs (useful for debugging)
+        show_sql: true
+        # Optional: Format the SQL statements in logs
+        format_sql: true
+    # Optional: Naming strategy for tables/columns
+    # open-in-view: false # Consider disabling OSIV pattern in web apps
+
+# Actuator endpoint configuration (optional)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics # Expose specific endpoints via HTTP
+
+# --- Add any custom application properties below ---
+# my-app:
+#   some-setting: value1

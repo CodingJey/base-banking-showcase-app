@@ -1,0 +1,35 @@
+services:
+  # Service for your Spring Boot application
+  base-banking-showcase-app:
+    build: . # Build the image from the Dockerfile in the current directory
+    container_name: base-banking-showcase-app # Optional: give the container a specific name
+    ports:
+      - "8080:8080" # Map host port 8080 to container port 8080 (defined in application.yml/Dockerfile)
+    environment:
+      # Pass database connection details as environment variables
+      # These names MUST match the placeholders used in application.yml
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/mydatabase # Use 'db' as hostname (service name below)
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      # Optional: Define active Spring profiles
+      # - SPRING_PROFILES_ACTIVE=prod
+    depends_on:
+      - db # Ensure the 'db' service starts before the 'app' service
+
+  # Service for the PostgreSQL database
+  db:
+    image: postgres:15 # Use an official PostgreSQL image version
+    container_name: my-microservice-db # Optional: give the container a specific name
+    environment:
+      # Set required PostgreSQL environment variables
+      - POSTGRES_DB=mydatabase # The name of the database to create
+      - POSTGRES_USER=user # The username to create
+      - POSTGRES_PASSWORD=password # The password for the user
+    ports:
+      - "54321:5432" # Optional: Map host port 54321 to container port 5432 for external access/debugging
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persist database data using a named volume
+
+# Define the named volume for data persistence
+volumes:
+  postgres_data:
